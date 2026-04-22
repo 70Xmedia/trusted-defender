@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trusted Defender — Dark Web Exposure Scan</title>
+
+  <style>
+    :root{
+      --blue:#0b4fa8;
+      --blue2:#0a63d8;
+      --lightblue:#eaf3ff;
+      --text:#0c1b33;
+      --muted:#6b7a90;
+
+      --danger:#c62828;
+      --warning:#f39c12;
+      --success:#1b8f4a;
+
+      --border:#dbe7f7;
+      --card:#ffffff;
+      --bg:#f4f8ff;
+      --shadow:0 10px 25px rgba(0,0,0,0.08);
+      --radius:16px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+      --orange:#ff7a00;
+      --orange2:#ff9a3d;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:var(--font);
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.4;
+    }
+
+    a{text-decoration:none;}
+    button{font-family:var(--font);}
+
+    /* HEADER */
+    header{
+      background:linear-gradient(135deg, var(--blue), var(--blue2));
+      color:white;
+      padding:22px 18px;
+      position:sticky;
+      top:0;
+      z-index:50;
+      box-shadow:0 5px 18px rgba(0,0,0,0.10);
+    }
+
+    .header-inner{
+      max-width:1100px;
+      margin:0 auto;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .logo{
+      width:42px;
+      height:42px;
+      background:white;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--blue);
+      font-weight:900;
+      font-size:18px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    .brand h1{
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:0.2px;
+    }
+
+    .brand p{
+      font-size:12px;
+      opacity:0.85;
+      margin-top:2px;
+    }
+
+    .top-badge{
+      background:rgba(255,255,255,0.16);
+      border:1px solid rgba(255,255,255,0.25);
+      padding:10px 12px;
+      border-radius:999px;
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    /* MAIN CONTAINER */
+    .container{
+      max-width:1100px;
+      margin:0 auto;
+      padding:28px 16px 60px;
+    }
+
+    /* HERO GRID */
+    .hero{
+      display:grid;
+      grid-template-columns:1.25fr 0.75fr;
+      gap:22px;
+      align-items:start;
+      margin-top:10px;
+    }
+
+    @media(max-width:900px){
+      .hero{grid-template-columns:1fr;}
+    }
+
+    .hero-card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      border:1px solid var(--border);
+      padding:26px;
+    }
+
+    .hero-card h2{
+      font-size:28px;
+      line-height:1.15;
+      margin-bottom:12px;
+    }
+
+    .hero-card .sub{
+      font-size:15px;
+      color:var(--muted);
+      margin-bottom:18px;
+    }
+
+    .trust-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:18px;
+    }
+
+    .pill{
+      font-size:12px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:var(--lightblue);
+      border:1px solid var(--border);
+      color:var(--blue);
+      font-weight:700;
+    }
+
+    .scan-box{
+      display:flex;
+      gap:10px;
+      margin-top:8px;
+    }
+
+    @media(max-width:520px){
+      .scan-box{flex-direction:column;}
+    }
+
+    input{
+      flex:1;
+      padding:14px 14px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      outline:none;
+      font-size:15px;
+      background:#fbfdff;
+    }
+
+    input:focus{
+      border-color:#9fc4ff;
+      box-shadow:0 0 0 4px rgba(10,99,216,0.12);
+    }
+
+    /* ALL BUTTONS ORANGE */
+    button{
+      padding:14px 16px;
+      border-radius:12px;
+      border:none;
+      background:linear-gradient(135deg, var(--orange), var(--orange2));
+      color:white;
+      font-weight:950;
+      cursor:pointer;
+      font-size:14px;
+      box-shadow:0 10px 22px rgba(255,122,0,0.28);
+      letter-spacing:0.2px;
+    }
+
+    button:hover{opacity:0.95;}
+    button:active{transform:scale(0.99);}
+
+    .small-note{
+      margin-top:12px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .small-note strong{color:var(--text);}
+
+    /* ALERT STYLE WHY THIS MATTERS */
+    .alert-card{
+      background:linear-gradient(180deg, rgba(255, 244, 229, 1), rgba(255,255,255,1));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      border:1px solid rgba(243,156,18,0.35);
+      padding:22px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .alert-card::before{
+      content:"";
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:6px;
+      background:linear-gradient(90deg, var(--warning), var(--danger));
+    }
+
+    .alert-card h3{
+      font-size:15px;
+      margin-bottom:10px;
+      color:#7a3d00;
+      font-weight:950;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .alert-icon{
+      width:22px;
+      height:22px;
+      border-radius:8px;
+      background:rgba(243,156,18,0.18);
+      border:1px solid rgba(243,156,18,0.35);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:950;
+      color:#a56400;
+      flex-shrink:0;
+    }
+
+    .alert-card ul{
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .alert-card li{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      font-size:13px;
+      color:#3a2b1a;
+      line-height:1.5;
+      font-weight:800;
+    }
+
+    .risk-dot{
+      width:18px;
+      height:18px;
+      border-radius:7px;
+      background:rgba(198,40,40,0.10);
+      border:1px solid rgba(198,40,40,0.25);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:950;
+      color:var(--danger);
+      flex-shrink:0;
+      margin-top:2px;
+      font-size:12px;
+    }
+
+    .alert-footer{
+      margin-top:14px;
+      font-size:12px;
+      color:#7a3d00;
+      font-weight:950;
+    }
+
+    /* Scan Progress */
+    .progress-wrap{
+      margin-top:18px;
+      display:none;
+    }
+
+    .progress-bar{
+      width:100%;
+      height:12px;
+      background:#e8f1ff;
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid var(--border);
+    }
+
+    .progress-fill{
+      width:0%;
+      height:100%;
+      background:linear-gradient(90deg, var(--orange), var(--orange2));
+      border-radius:999px;
+      transition:width 0.2s ease;
+    }
+
+    .progress-text{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:8px;
+    }
+
+    /* Results */
+    .results{
+      display:none;
+      margin-top:24px;
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      border:1px solid var(--border);
+      padding:24px;
+    }
+
+    .results-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .risk-badge{
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:950;
+      font-size:13px;
+      display:inline-block;
+      border:1px solid rgba(198,40,40,0.3);
+      background:rgba(198,40,40,0.10);
+      color:var(--danger);
+    }
+
+    .results h3{
+      font-size:20px;
+      margin-bottom:6px;
+    }
+
+    .results p{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .result-grid{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:14px;
+    }
+
+    @media(max-width:850px){
+      .result-grid{grid-template-columns:1fr;}
+    }
+
+    .stat{
+      border:1px solid var(--border);
+      background:#fbfdff;
+      border-radius:14px;
+      padding:16px;
+    }
+
+    .stat .label{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:8px;
+      font-weight:700;
+    }
+
+    .stat .value{
+      font-size:22px;
+      font-weight:950;
+      color:var(--text);
+    }
+
+    .stat .warn{
+      color:var(--danger);
+    }
+
+    /* Breach Details */
+    .breach-table{
+      margin-top:18px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      overflow:hidden;
+    }
+
+    .breach-header{
+      background:var(--lightblue);
+      padding:12px 14px;
+      font-weight:950;
+      font-size:13px;
+      color:var(--blue);
+      border-bottom:1px solid var(--border);
+    }
+
+    .breach-row{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px;
+      border-bottom:1px solid var(--border);
+      background:white;
+      flex-wrap:wrap;
+    }
+
+    .breach-row:last-child{border-bottom:none;}
+
+    .breach-row .left{
+      flex:1;
+      min-width:240px;
+    }
+
+    .breach-row .right{
+      text-align:right;
+      min-width:180px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .breach-row .left strong{
+      display:block;
+      font-size:14px;
+      margin-bottom:4px;
+    }
+
+    .tag{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:950;
+      margin-top:8px;
+      border:1px solid var(--border);
+      background:#fbfdff;
+      color:var(--muted);
+    }
+
+    .tag.danger{
+      border-color:rgba(198,40,40,0.3);
+      background:rgba(198,40,40,0.08);
+      color:var(--danger);
+    }
+
+    .tag.warning{
+      border-color:rgba(243,156,18,0.35);
+      background:rgba(243,156,18,0.10);
+      color:#a56400;
+    }
+
+    .tag.info{
+      border-color:rgba(10,99,216,0.25);
+      background:rgba(10,99,216,0.08);
+      color:var(--blue2);
+    }
+
+    /* Action Section */
+    .action-section{
+      margin-top:22px;
+      border-radius:var(--radius);
+      border:1px solid var(--border);
+      overflow:hidden;
+    }
+
+    .action-header{
+      background:linear-gradient(135deg, #0b4fa8, #0a63d8);
+      padding:18px;
+      color:white;
+    }
+
+    .action-header h4{
+      font-size:18px;
+      margin-bottom:6px;
+      font-weight:950;
+    }
+
+    .action-header p{
+      font-size:13px;
+      color:rgba(255,255,255,0.86);
+      line-height:1.55;
+    }
+
+    .action-body{
+      background:white;
+      padding:18px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+
+    @media(max-width:900px){
+      .action-body{grid-template-columns:1fr;}
+    }
+
+    .action-card{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:16px;
+      background:#fbfdff;
+    }
+
+    .action-card h5{
+      font-size:14px;
+      margin-bottom:8px;
+      font-weight:950;
+    }
+
+    .action-card ul{
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      font-size:13px;
+      color:var(--muted);
+      margin-top:10px;
+    }
+
+    .action-card li{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+
+    .check{
+      width:18px;
+      height:18px;
+      border-radius:6px;
+      background:rgba(27,143,74,0.12);
+      border:1px solid rgba(27,143,74,0.25);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:950;
+      color:var(--success);
+      flex-shrink:0;
+      margin-top:2px;
+    }
+
+    .alert{
+      width:18px;
+      height:18px;
+      border-radius:6px;
+      background:rgba(198,40,40,0.10);
+      border:1px solid rgba(198,40,40,0.22);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:950;
+      color:var(--danger);
+      flex-shrink:0;
+      margin-top:2px;
+    }
+
+    .cta{
+      margin-top:14px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    /* PRIMARY CTA ORANGE + PULSE */
+    .cta a.primary{
+      display:inline-block;
+      width:100%;
+      padding:16px 18px;
+      border-radius:14px;
+      font-weight:950;
+      font-size:14px;
+      background:linear-gradient(135deg, #ff5e00, #ff9a3d);
+      color:white;
+      text-align:center;
+      text-transform:uppercase;
+      letter-spacing:0.4px;
+      box-shadow:0 16px 34px rgba(255,94,0,0.38);
+      animation:pulseCTA 2.2s infinite;
+    }
+
+    @keyframes pulseCTA{
+      0% { transform:scale(1); box-shadow:0 16px 34px rgba(255,94,0,0.35); }
+      50% { transform:scale(1.02); box-shadow:0 22px 44px rgba(255,94,0,0.48); }
+      100% { transform:scale(1); box-shadow:0 16px 34px rgba(255,94,0,0.35); }
+    }
+
+    /* SECONDARY CTA LIGHT BLUE */
+    .cta a.secondary{
+      display:inline-block;
+      width:100%;
+      padding:14px 16px;
+      border-radius:14px;
+      font-weight:950;
+      font-size:13px;
+      background:var(--lightblue);
+      color:var(--blue2);
+      border:1px solid rgba(10,99,216,0.20);
+      text-align:center;
+      box-shadow:none;
+    }
+
+    .cta a:hover{opacity:0.95;}
+    .cta a:active{transform:scale(0.99);}
+
+    .disclaimer{
+      margin-top:18px;
+      font-size:12px;
+      color:var(--muted);
+      padding:14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#fbfdff;
+    }
+
+    footer{
+      margin-top:50px;
+      padding:28px 16px;
+      background:#081a33;
+      color:white;
+    }
+
+    .footer-inner{
+      max-width:1100px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:2fr 1fr 1fr;
+      gap:18px;
+    }
+
+    @media(max-width:900px){
+      .footer-inner{grid-template-columns:1fr;}
+    }
+
+    footer h6{
+      font-size:13px;
+      margin-bottom:10px;
+      opacity:0.9;
+    }
+
+    footer p{
+      font-size:12px;
+      opacity:0.75;
+      line-height:1.6;
+    }
+
+    footer ul{
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    footer a{
+      color:white;
+      opacity:0.85;
+      font-size:12px;
+    }
+
+    footer a:hover{opacity:1;}
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:999;
+      padding:18px;
+    }
+
+    .modal-content{
+      width:100%;
+      max-width:720px;
+      background:white;
+      border-radius:18px;
+      padding:22px;
+      box-shadow:0 25px 60px rgba(0,0,0,0.30);
+      border:1px solid var(--border);
+      max-height:80vh;
+      overflow:auto;
+    }
+
+    .modal-content h2{
+      font-size:18px;
+      margin-bottom:8px;
+    }
+
+    .modal-content p{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:10px;
+      line-height:1.6;
+    }
+
+    .close-btn{
+      margin-top:10px;
+      width:100%;
+      padding:14px 14px;
+      border-radius:14px;
+      border:none;
+      background:linear-gradient(135deg, var(--orange), var(--orange2));
+      color:white;
+      font-weight:950;
+      cursor:pointer;
+      font-size:13px;
+    }
+
+    /* ============================================================
+       MOBILE APP FEEL (ONLY MOBILE, DOES NOT AFFECT DESKTOP)
+       ============================================================ */
+    @media(max-width:600px){
+
+      body{
+        background:#eef5ff;
+      }
+
+      header{
+        position:fixed;
+        width:100%;
+        left:0;
+        top:0;
+        padding:14px 14px;
+        border-bottom-left-radius:18px;
+        border-bottom-right-radius:18px;
+      }
+
+      .header-inner{
+        gap:10px;
+      }
+
+      .logo{
+        width:38px;
+        height:38px;
+        border-radius:12px;
+        font-size:16px;
+      }
+
+      .brand h1{
+        font-size:15px;
+      }
+
+      .brand p{
+        font-size:11px;
+      }
+
+      .top-badge{
+        font-size:10px;
+        padding:7px 10px;
+      }
+
+      .container{
+        padding:96px 12px 40px; /* pushes content below fixed header */
+      }
+
+      .hero-card{
+        padding:18px;
+        border-radius:18px;
+      }
+
+      .hero-card h2{
+        font-size:22px;
+      }
+
+      .hero-card .sub{
+        font-size:13px;
+        margin-bottom:14px;
+      }
+
+      input{
+        font-size:14px;
+        padding:13px 13px;
+      }
+
+      button{
+        font-size:14px;
+        padding:14px;
+        border-radius:14px;
+      }
+
+      .alert-card{
+        padding:18px;
+        border-radius:18px;
+      }
+
+      .results{
+        padding:18px;
+        border-radius:18px;
+      }
+
+      .result-grid{
+        grid-template-columns:1fr;
+      }
+
+      .breach-row{
+        padding:12px;
+      }
+
+      .breach-row .right{
+        text-align:left;
+      }
+
+      .action-body{
+        grid-template-columns:1fr;
+        padding:14px;
+      }
+
+      .action-header{
+        padding:16px;
+      }
+
+      .action-card{
+        padding:14px;
+      }
+
+      .cta{
+        flex-direction:column;
+        gap:10px;
+      }
+
+      .cta a.primary{
+        font-size:14px;
+        padding:16px;
+      }
+
+      .cta a.secondary{
+        font-size:13px;
+        padding:14px;
+      }
+
+      footer{
+        padding:22px 14px;
+        border-top-left-radius:18px;
+        border-top-right-radius:18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo">TD</div>
+      <div>
+        <h1>Trusted Defender</h1>
+        <p>Dark Web Exposure Scanner (Prototype)</p>
+      </div>
+    </div>
+
+    <div class="top-badge">🔒 Secure Scan</div>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <div class="hero-card">
+      <h2>Find out if your sensitive information has been leaked on the Darkweb</h2>
+      <p class="sub">
+        Enter your primary email address to check for exposure in known breach databases and underground leak sources.
+        Results are displayed instantly for demonstration purposes.
+      </p>
+
+      <div class="trust-row">
+        <span class="pill">Identity Protection</span>
+        <span class="pill">Breach Monitoring</span>
+        <span class="pill">Fraud Risk Detection</span>
+        <span class="pill">Secure Recommendations</span>
+      </div>
+
+      <div class="scan-box">
+        <input id="emailInput" type="email" placeholder="Enter your email address (example@email.com)" />
+        <button onclick="runScan()">Scan Now</button>
+      </div>
+
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">Initializing scan...</div>
+      </div>
+
+      <p class="small-note">
+        <strong>Note:</strong> This is a prototype demonstration interface. Results shown are sample results for layout preview.
+      </p>
+    </div>
+
+    <div class="alert-card">
+      <h3><span class="alert-icon">!</span> Why this matters</h3>
+
+      <ul>
+        <li><span class="risk-dot">!</span><span>Leaked passwords can be used to access banking, shopping, and social accounts.</span></li>
+        <li><span class="risk-dot">!</span><span>Cybercriminals often sell full identity profiles for fraud and account takeovers.</span></li>
+        <li><span class="risk-dot">!</span><span>Many victims don’t know they were exposed until money is stolen or accounts are locked.</span></li>
+        <li><span class="risk-dot">!</span><span>Attackers reuse stolen logins across hundreds of popular websites automatically.</span></li>
+      </ul>
+
+      <div class="alert-footer">
+        High-risk exposure is often exploited within hours.
+      </div>
+    </div>
+  </section>
+
+  <section class="results" id="resultsBox">
+    <div class="results-top">
+      <div>
+        <h3>Exposure Report</h3>
+        <p id="emailResult">Email analyzed: —</p>
+        <p id="timestamp">Scan completed: —</p>
+      </div>
+      <div class="risk-badge" id="riskBadge">HIGH RISK DETECTED</div>
+    </div>
+
+    <div class="result-grid">
+      <div class="stat">
+        <div class="label">Databases Found</div>
+        <div class="value warn" id="dbCount">14</div>
+      </div>
+      <div class="stat">
+        <div class="label">Password Exposure</div>
+        <div class="value warn" id="passwordExposure">YES</div>
+      </div>
+      <div class="stat">
+        <div class="label">Estimated Account Risk</div>
+        <div class="value warn" id="riskScore">Severe</div>
+      </div>
+    </div>
+
+    <div class="breach-table">
+      <div class="breach-header">Detected Exposure Sources</div>
+
+      <div class="breach-row">
+        <div class="left">
+          <strong>Credential Dump Marketplace</strong>
+          Your email + password combination appears in multiple credential lists.
+          <div class="tag danger">Password Included</div>
+          <div class="tag warning">High Exploitation Risk</div>
+        </div>
+        <div class="right">
+          Last seen: 2025-12-09<br/>
+          Severity: Critical
+        </div>
+      </div>
+
+      <div class="breach-row">
+        <div class="left">
+          <strong>Financial Services Breach Archive</strong>
+          Potential exposure linked to payment platforms and financial login reuse.
+          <div class="tag danger">Possible Bank Access</div>
+          <div class="tag warning">Credential Stuffing Risk</div>
+        </div>
+        <div class="right">
+          Last seen: 2026-01-18<br/>
+          Severity: High
+        </div>
+      </div>
+
+      <div class="breach-row">
+        <div class="left">
+          <strong>Social & Messaging Leak Index</strong>
+          Attackers may impersonate you using leaked email identity details.
+          <div class="tag warning">Impersonation Risk</div>
+          <div class="tag info">Email Verified</div>
+        </div>
+        <div class="right">
+          Last seen: 2025-10-21<br/>
+          Severity: Medium
+        </div>
+      </div>
+
+      <div class="breach-row">
+        <div class="left">
+          <strong>Address & Phone Data Broker Lists</strong>
+          Your profile may have been packaged with phone/address data.
+          <div class="tag danger">Identity Theft Risk</div>
+          <div class="tag warning">Spam / Scam Target</div>
+        </div>
+        <div class="right">
+          Last seen: 2026-02-03<br/>
+          Severity: High
+        </div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Important:</strong> This prototype displays sample exposure findings for demonstration. A real scan would require verified breach intelligence sources.
+    </div>
+
+    <div class="action-section">
+      <div class="action-header">
+        <h4>What you can do now</h4>
+        <p>
+          Based on the exposure level detected, you may need to take action immediately to reduce the chance of account takeover,
+          fraud, or identity theft.
+        </p>
+      </div>
+
+      <div class="action-body">
+        <div class="action-card">
+          <h5>Recommended Protection (Fastest & Easiest)</h5>
+          <p style="color:var(--muted); font-size:13px;">
+            If your password was leaked, criminals can try your login on major services within minutes.
+            Automated protection and monitoring is the safest option for most users.
+          </p>
+
+          <ul>
+            <li><span class="check">✓</span><span>Monitor dark web sources continuously for new exposures</span></li>
+            <li><span class="check">✓</span><span>Receive alerts if your email, passwords, or personal data appears for sale</span></li>
+            <li><span class="check">✓</span><span>Get step-by-step guided remediation support</span></li>
+            <li><span class="check">✓</span><span>Reduce identity theft risk with proactive monitoring</span></li>
+          </ul>
+
+          <div class="cta">
+            <a class="primary" href="https://www.idefendhome.com/lp/darkwebscan_d/" target="_blank">
+              Protect My Identity Now
+            </a>
+
+            <a class="secondary" href="https://www.idefendhome.com/lp/darkwebscan_d/" target="_blank">
+              View Protection Options
+            </a>
+          </div>
+
+          <p style="margin-top:12px; font-size:12px; color:var(--muted);">
+            Recommended for non-technical users or anyone with financial accounts linked to this email.
+          </p>
+        </div>
+
+        <div class="action-card">
+          <h5>Free Manual Steps (Time-Consuming)</h5>
+          <p style="color:var(--muted); font-size:13px;">
+            You can attempt to remove and secure your data manually — but it requires multiple steps, technical work,
+            and constant monitoring. Many users stop halfway due to complexity.
+          </p>
+
+          <ul>
+            <li><span class="alert">!</span><span>Change your password on ALL major accounts immediately</span></li>
+            <li><span class="alert">!</span><span>Enable two-factor authentication (2FA) everywhere possible</span></li>
+            <li><span class="alert">!</span><span>Check for reused passwords across banking, shopping, email, and social platforms</span></li>
+            <li><span class="alert">!</span><span>Contact data brokers individually to request removal (often takes weeks)</span></li>
+            <li><span class="alert">!</span><span>Request takedowns on breach repost sites (no guarantee of success)</span></li>
+            <li><span class="alert">!</span><span>Monitor forums/marketplaces frequently for re-uploads</span></li>
+          </ul>
+
+          <p style="margin-top:14px; font-size:12px; color:var(--muted);">
+            ⚠ Manual removal does not prevent criminals from re-selling your information again later.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <h6>Trusted Defender</h6>
+      <p>
+        Trusted Defender provides an informational cybersecurity awareness experience.
+        This is a prototype interface designed to demonstrate how a dark web scan report may appear.
+      </p>
+      <p style="margin-top:10px;">
+        © <span id="year"></span> Trusted Defender. All rights reserved.
+      </p>
+    </div>
+
+    <div>
+      <h6>Company</h6>
+      <ul>
+        <li><a href="#" onclick="openModal('about')">About</a></li>
+        <li><a href="#" onclick="openModal('contact')">Contact Us</a></li>
+        <li><a href="#" onclick="openModal('disclaimer')">Disclaimer</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h6>Legal</h6>
+      <ul>
+        <li><a href="#" onclick="openModal('privacy')">Privacy Policy</a></li>
+        <li><a href="#" onclick="openModal('terms')">Terms of Service</a></li>
+        <li><a href="#" onclick="openModal('cookies')">Cookie Policy</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <div id="modalBody"></div>
+    <button class="close-btn" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+  document.getElementById("year").innerText = new Date().getFullYear();
+
+  function runScan(){
+    const email = document.getElementById("emailInput").value.trim();
+    if(!email || !email.includes("@")){
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    document.getElementById("resultsBox").style.display = "none";
+    document.getElementById("progressWrap").style.display = "block";
+    document.getElementById("progressFill").style.width = "0%";
+
+    const progressText = document.getElementById("progressText");
+    const fill = document.getElementById("progressFill");
+
+    const steps = [
+      "Initializing scan...",
+      "Checking known breach databases...",
+      "Analyzing credential dump listings...",
+      "Searching underground leak indexes...",
+      "Reviewing marketplace repost activity...",
+      "Compiling exposure report...",
+      "Finalizing results..."
+    ];
+
+    let i = 0;
+    let progress = 0;
+
+    const timer = setInterval(() => {
+      progress += Math.floor(Math.random() * 12) + 7;
+      if(progress > 100) progress = 100;
+      fill.style.width = progress + "%";
+
+      if(i < steps.length){
+        progressText.innerText = steps[i];
+        i++;
+      }
+
+      if(progress >= 100){
+        clearInterval(timer);
+        setTimeout(() => {
+          document.getElementById("progressWrap").style.display = "none";
+          generateResults(email);
+        }, 450);
+      }
+    }, 520);
+  }
+
+  function generateResults(email){
+    const dbCount = Math.floor(Math.random() * 8) + 10;
+    const severityOptions = ["High", "Severe", "Critical"];
+    const riskScore = severityOptions[Math.floor(Math.random() * severityOptions.length)];
+
+    document.getElementById("emailResult").innerText = "Email analyzed: " + email;
+    document.getElementById("timestamp").innerText =
+      "Scan completed: " + new Date().toLocaleString();
+
+    document.getElementById("dbCount").innerText = dbCount;
+    document.getElementById("passwordExposure").innerText = "YES";
+    document.getElementById("riskScore").innerText = riskScore;
+
+    const badge = document.getElementById("riskBadge");
+    badge.innerText = riskScore.toUpperCase() + " RISK DETECTED";
+
+    document.getElementById("resultsBox").style.display = "block";
+    window.scrollTo({ top: document.getElementById("resultsBox").offsetTop - 90, behavior: "smooth" });
+  }
+
+  function openModal(type){
+    const modal = document.getElementById("modal");
+    const body = document.getElementById("modalBody");
+
+    let content = "";
+
+    if(type === "about"){
+      content = `
+        <h2>About Trusted Defender</h2>
+        <p>
+          Trusted Defender is a cybersecurity awareness prototype designed to demonstrate how identity exposure reports
+          may be displayed to users.
+        </p>
+      `;
+    }
+
+    if(type === "contact"){
+      content = `
+        <h2>Contact Us</h2>
+        <p><strong>Email:</strong> support@trusteddefender.com</p>
+      `;
+    }
+
+    if(type === "privacy"){
+      content = `
+        <h2>Privacy Policy</h2>
+        <p>
+          This prototype does not permanently store submitted email addresses.
+          Scan results are generated locally in the browser for demonstration purposes.
+        </p>
+      `;
+    }
+
+    if(type === "terms"){
+      content = `
+        <h2>Terms of Service</h2>
+        <p>
+          Results may be simulated in this prototype environment and should not be considered a verified security audit.
+        </p>
+      `;
+    }
+
+    if(type === "cookies"){
+      content = `
+        <h2>Cookie Policy</h2>
+        <p>
+          This prototype does not require tracking cookies.
+        </p>
+      `;
+    }
+
+    if(type === "disclaimer"){
+      content = `
+        <h2>Disclaimer</h2>
+        <p>
+          Trusted Defender is a prototype demonstration interface.
+          Any breach findings shown are sample data.
+        </p>
+      `;
+    }
+
+    body.innerHTML = content;
+    modal.style.display = "flex";
+  }
+
+  function closeModal(){
+    document.getElementById("modal").style.display = "none";
+  }
+
+  document.getElementById("modal").addEventListener("click", function(e){
+    if(e.target.id === "modal"){
+      closeModal();
+    }
+  });
+</script>
+
+</body>
+</html>
